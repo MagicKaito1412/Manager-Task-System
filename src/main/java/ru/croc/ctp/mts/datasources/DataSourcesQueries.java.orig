@@ -1,0 +1,14 @@
+package ru.croc.ctp.mts.datasources;
+
+import javax.persistence.EntityManager;
+
+public class DataSourcesQueries {
+    @SuppressWarnings("unused")
+	private EntityManager entityManager;
+
+    public DataSourcesQueries(EntityManager entityManager) {
+        super();
+        this.entityManager = entityManager;
+    }
+
+}

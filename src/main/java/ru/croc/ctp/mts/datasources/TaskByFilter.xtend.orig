@@ -1,0 +1,19 @@
+package ru.croc.ctp.mts.datasources
+
+import ru.croc.ctp.jxfw.core.generator.meta.XFWDataSource
+import ru.croc.ctp.jxfw.core.datasource.DataSourceLoader
+import ru.croc.ctp.mts.domain.Task
+
+
+@XFWDataSource("TaskByFilter")
+abstract class TaskByFilter implements DataSourceLoader<Task, String> {
+	public String fullName
+	public Boolean actual
+    public Integer status
+    public Boolean open
+
+	//public Project project
+	
+	
+	
+}

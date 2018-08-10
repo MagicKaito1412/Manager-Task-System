@@ -1,0 +1,82 @@
+package ru.croc.ctp.mts.datasources;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaContext;
+
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
+
+import com.querydsl.jpa.impl.JPAQuery;
+
+import ru.croc.ctp.mts.datasources.TaskByFilter;
+import ru.croc.ctp.mts.domain.QTask;
+import ru.croc.ctp.mts.domain.Task;
+import ru.croc.ctp.jxfw.core.datasource.meta.XFWDataSourceComponent;
+
+/**
+ * Class implements filters's logic. 
+ * In {@link ru.croc.ctp.mts.datasources.TaskByFilter} declared fields for filtering.
+ * 
+ * @author team1
+ *
+ */
+@XFWDataSourceComponent
+public class TaskDataSource extends TaskByFilter {
+
+	@Autowired
+	private JpaContext jpaContext;
+
+	/**
+	 * Method compares filter's data with data from system repositories.
+	 */
+	@Override
+	public Predicate getPredicate() {
+
+		QTask task = QTask.task;
+
+		BooleanBuilder whereClause = new BooleanBuilder();
+
+		if (fullName != null) {
+			whereClause.and(task.taskPerformer.lastName.toLowerCase().concat(" ")
+					.concat(task.taskPerformer.firstName.toLowerCase()).concat(" ")
+					.concat(task.taskPerformer.middleName.toLowerCase()).contains(fullName.toLowerCase()));
+		}
+
+		if (actual != null) {
+			LocalDateTime time = LocalDateTime.now();
+			if (actual == true) {
+				whereClause.and(task.deadline.after(time));
+			} else {
+				whereClause.and(task.deadline.before(time));
+			}
+
+		}
+		
+		if (status != null) {
+			whereClause.and(task.status.eq(status));
+		}
+
+		if (open != null) {
+			if (open) {
+				whereClause.and(task.status.eq(2)).or(task.status.eq(4).or(task.status.eq(8)).or(task.status.eq(16)));
+			}
+		}
+
+		return whereClause;
+	}
+
+	/**
+	 * Method fetches filter's result. 
+	 */
+	@Override
+	public List<Task> load(Predicate predicate, Map<String, Object> hints) {
+		JPAQuery<Task> query = new JPAQuery<>(jpaContext.getEntityManagerByManagedType(Task.class));
+		QTask task = QTask.task;
+
+		return query.from(task).where(predicate).select(task).fetch();
+	}
+}

@@ -1,0 +1,399 @@
+package ru.croc.ctp.mts.listener.task;
+
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.List;
+import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import ru.croc.ctp.jxfw.core.domain.DomainObject;
+import ru.croc.ctp.jxfw.core.store.events.BeforeStoreEvent;
+import ru.croc.ctp.jxfw.core.store.events.BeforeStoreEventListener;
+import ru.croc.ctp.jxfw.core.store.events.DomainObjectStoreEvent;
+import ru.croc.ctp.mts.domain.EditeTask;
+import ru.croc.ctp.mts.domain.Project;
+import ru.croc.ctp.mts.domain.Status;
+import ru.croc.ctp.mts.domain.Task;
+import ru.croc.ctp.mts.domain.TaskType;
+import ru.croc.ctp.mts.domain.User;
+import ru.croc.ctp.mts.domain.repo.EditeTaskRepository;
+import ru.croc.ctp.mts.domain.repo.TaskRepository;
+import ru.croc.ctp.mts.security.CustomUserDetails;
+
+import java.util.Set;
+
+/**
+ * Class generates task's fields.
+ * 
+ * @author team1
+ *
+ */
+@Component
+public class GenerateListener implements BeforeStoreEventListener {
+
+<<<<<<< local
+	/**
+	 * Method sets task's number in project.
+	 * 
+	 * @param event
+	 */
+	@EventListener(condition = "#event.domainObject.new")
+	public void onApplicationEventNew(DomainObjectStoreEvent<Task> event) {
+		Task domainObject = event.getDomainObject();
+		Integer count = domainObject.getProject().getTaskCounter() + 1;
+		domainObject.getProject().setTaskCounter(count);
+		domainObject.setNumberTaskInProject(domainObject.getProject().getCodeProject() + "-" + count);
+	}
+=======
+	@Autowired
+	TaskRepository taskRepository;
+>>>>>>> other
+
+<<<<<<< local
+	/**
+	 * Method sets {@code startline}, {@code changedDate}, {@code author} and
+	 * {@code lastEditor} of the task.
+	 * 
+	 * @param event
+	 */
+	@EventListener(condition = "#event.domainObject.new")
+	public void onApplicationEventNewTaskStartline(DomainObjectStoreEvent<Task> event) {
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+		Task domainObject = event.getDomainObject();
+		LocalDateTime lDT = LocalDateTime.now();
+		domainObject.setStartline(lDT);
+		domainObject.setChangedDate(lDT);
+		domainObject.setAuthor(principal.getUser());
+		domainObject.setLastEditor(principal.getUser());
+		if (domainObject.getDeadline().isBefore(lDT))
+			throw new IllegalArgumentException("Дата дедлайна должна быть позднее сегодняшнего дня");
+	}
+=======
+	@EventListener(condition = "#event.domainObject.new")
+	public void onApplicationEventNew(DomainObjectStoreEvent<Task> event) {
+		Task domainObject = event.getDomainObject();
+		Integer count = domainObject.getProject().getTaskCounter() + 1;
+		domainObject.getProject().setTaskCounter(count);
+		domainObject.setNumberTaskInProject(domainObject.getProject().getCodeProject() + "-" + count);
+	}
+>>>>>>> other
+
+<<<<<<< local
+	/**
+	 * Method generates {@code wasteTime} in task.
+	 */
+	@Override
+	public void onApplicationEvent(BeforeStoreEvent event) {
+		List<? extends DomainObject<?>> domainObjects = event.getStoreContext().getDomainObjects();
+=======
+	@EventListener(condition = "#event.domainObject.new")
+	public void onApplicationEventNewTaskStartline(DomainObjectStoreEvent<Task> event) {
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+		Task domainObject = event.getDomainObject();
+		LocalDateTime lDT = LocalDateTime.now();
+		domainObject.setStartline(lDT);
+		domainObject.setChangedDate(lDT);
+		domainObject.setAuthor(principal.getUser());
+		domainObject.setLastEditor(principal.getUser());
+		if (domainObject.getDeadline().isBefore(lDT))
+			throw new IllegalArgumentException("Дата дедлайна должна быть позднее сегодняшнего дня");
+	}
+>>>>>>> other
+
+<<<<<<< local
+		domainObjects.forEach(domainObject -> {
+			if (!domainObject.isNew() && (domainObject instanceof Task)) {
+				Task task = (Task) domainObject;
+=======
+	@Override
+	public void onApplicationEvent(BeforeStoreEvent event) {
+		List<? extends DomainObject<?>> domainObjects = event.getStoreContext().getDomainObjects();
+>>>>>>> other
+
+<<<<<<< local
+				final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+				final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+				@SuppressWarnings("unused")
+				String author = principal.getUsername();
+				task.setLastEditor(principal.getUser());
+=======
+		domainObjects.forEach(domainObject -> {
+			if (!domainObject.isNew() && (domainObject instanceof Task)) {
+				Task task = (Task) domainObject;
+>>>>>>> other
+
+<<<<<<< local
+				if (!task.getStatus().equals(Status.CLOSED)) {
+					Period period = Period.between(LocalDateTime.now().toLocalDate(),
+							task.getStartline().toLocalDate());
+					task.setWastedTime(period.getYears() + "y " + period.getMonths() + "m " + period.getDays() + "d");
+				}
+=======
+				final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+				final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+				String author = principal.getUsername();
+				task.setLastEditor(principal.getUser());
+>>>>>>> other
+
+<<<<<<< local
+			}
+		});
+=======
+				if (!task.getStatus().equals(Status.CLOSED)) {
+					Period period = Period.between(LocalDateTime.now().toLocalDate(),
+							task.getStartline().toLocalDate());
+					task.setWastedTime(period.getYears() + "y " + period.getMonths() + "m " + period.getDays() + "d");
+				}
+>>>>>>> other
+
+<<<<<<< local
+	}
+=======
+			}
+		});
+>>>>>>> other
+
+<<<<<<< local
+	/**
+	 * Method confirm update files in system.
+	 * @param event
+	 */
+	@EventListener(condition = "#event.domainObject.new")
+	public void onApplicationEventControllRights(DomainObjectStoreEvent<Task> event) {
+		Task task = event.getDomainObject();
+=======
+	}
+>>>>>>> other
+
+<<<<<<< local
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+		User cs = principal.getUser();
+		if (!cs.getIsAdmin()) {
+			task.setIsCheck(false);
+		} else {
+			task.setIsCheck(true);
+		}
+	}
+=======
+	@EventListener(condition = "#event.domainObject.new")
+	public void onApplicationEventControllRights(DomainObjectStoreEvent<Task> event) {
+		Task task = event.getDomainObject();
+>>>>>>> other
+
+<<<<<<< local
+	@Autowired
+	EditeTaskRepository editeTaskRepository;
+=======
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+		User cs = principal.getUser();
+		if (!cs.getIsAdmin()) {
+			task.setIsCheck(false);
+		} else {
+			task.setIsCheck(true);
+		}
+	}
+>>>>>>> other
+
+<<<<<<< local
+	/**
+	 * Method adds fields in edit task.
+	 * @param event
+	 */
+	@EventListener(condition = "!#event.domainObject.new")
+	public void onApplicationEventLookForUpdate(DomainObjectStoreEvent<Task> event) {
+		EditeTask editeTask = new EditeTask();
+		editeTask.setId(UUID.randomUUID().toString());
+		Task task = event.getDomainObject();
+=======
+	@Autowired
+	EditeTaskRepository editeTaskRepository;
+>>>>>>> other
+
+<<<<<<< local
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+		User cs = principal.getUser();
+		if (cs.getIsAdmin()) {
+			return;
+		}
+=======
+	@EventListener(condition = "!#event.domainObject.new")
+	public void onApplicationEventLookForUpdate(DomainObjectStoreEvent<Task> event) {
+		EditeTask editeTask = new EditeTask();
+		editeTask.setId(UUID.randomUUID().toString());
+		Task task = event.getDomainObject();
+>>>>>>> other
+
+<<<<<<< local
+		Set<String> set = task.getDirtyAttributes();
+		@SuppressWarnings("rawtypes")
+		Iterator iterator1 = set.iterator();
+		List<String> list = new ArrayList<>();
+		while (iterator1.hasNext()) {
+			list.add((String) iterator1.next());
+		}
+=======
+		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		final CustomUserDetails principal = ((CustomUserDetails) authentication.getPrincipal());
+		User cs = principal.getUser();
+		if (cs.getIsAdmin()) {
+			return;
+		}
+>>>>>>> other
+
+<<<<<<< local
+		if (list.size() == 1 && list.contains("status")) {
+			return;
+		}
+=======
+		Set<String> set = task.getDirtyAttributes();
+		Iterator iterator1 = set.iterator();
+		List<String> list = new ArrayList<>();
+		while (iterator1.hasNext()) {
+			list.add((String) iterator1.next());
+		}
+>>>>>>> other
+
+<<<<<<< local
+		@SuppressWarnings("rawtypes")
+		Iterator iterator = set.iterator();
+		while (iterator.hasNext()) {
+			String temp = (String) iterator.next();
+			switch (temp) {
+			case "description":
+				editeTask.setDescription((String) task.getCurrentValue(temp).get(0));
+				break;
+			case "deadline":
+				editeTask.setDeadline((LocalDateTime) task.getCurrentValue(temp).get(0));
+				break;
+			case "type":
+				editeTask.setType((TaskType) task.getCurrentValue(temp).get(0));
+				break;
+			case "project":
+				editeTask.setProject((Project) task.getCurrentValue(temp).get(0));
+				break;
+=======
+		if (list.size() == 1 && list.contains("status")) {
+			return;
+		}
+>>>>>>> other
+
+<<<<<<< local
+			case "taskPerformer":
+				editeTask.setTaskPerformer((User) task.getCurrentValue(temp).get(0));
+				break;
+			}
+		}
+		editeTask.setTaskId(task.getId());
+=======
+		Iterator iterator = set.iterator();
+		while (iterator.hasNext()) {
+			String temp = (String) iterator.next();
+			System.out.println(temp);
+			switch (temp) {
+			case "description":
+				System.out.println(task.getCurrentValue(temp).get(0) + "   OOOOOO");
+				editeTask.setDescription((String) task.getCurrentValue(temp).get(0));
+				break;
+			case "deadline":
+				editeTask.setDeadline((LocalDateTime) task.getCurrentValue(temp).get(0));
+				break;
+			case "type":
+				editeTask.setType((TaskType) task.getCurrentValue(temp).get(0));
+				break;
+			case "project":
+				editeTask.setProject((Project) task.getCurrentValue(temp).get(0));
+				break;
+>>>>>>> other
+
+<<<<<<< local
+		editeTaskRepository.save(editeTask);
+		if (!cs.getIsAdmin()) {
+			task.setIsCheck(false);
+			task.setStatus(Status.CLOSED);
+		} else {
+			task.setIsCheck(true);
+		}
+=======
+			case "taskPerformer":
+				editeTask.setTaskPerformer((User) task.getCurrentValue(temp).get(0));
+				break;
+			}
+		}
+		editeTask.setTaskId(task.getId());
+>>>>>>> other
+
+<<<<<<< local
+	}
+=======
+		editeTaskRepository.save(editeTask);
+		if (!cs.getIsAdmin()) {
+			task.setIsCheck(false);
+			task.setStatus(Status.CLOSED);
+		} else {
+			task.setIsCheck(true);
+		}
+>>>>>>> other
+
+<<<<<<< local
+	@Autowired
+	TaskRepository taskRepository;
+=======
+	}
+>>>>>>> other
+
+<<<<<<< local
+	/**
+	 * Method updates {@code description}, {@code deadLine}, {@code taskType}, {@code project}, {@code taskPerformer}
+	 * @param event
+	 */
+	@EventListener(condition = "!#event.domainObject.new")
+	public void onApplicationEventTest(DomainObjectStoreEvent<EditeTask> event) {
+
+		EditeTask editetask = event.getDomainObject();
+		Task task = taskRepository.getOne(editetask.getTaskId());
+		if (editetask.getIsCheck()) {
+
+			if (editetask.getDescription() != null) {
+				String temp = editetask.getDescription();
+				task.setDescription(temp);
+			}
+			if (editetask.getDeadline() != null) {
+				LocalDateTime temp = editetask.getDeadline();
+				task.setDeadline(temp);
+			}
+			if (editetask.getType() != null) {
+				TaskType temp = editetask.getType();
+				task.setType(temp);
+			}
+			if (editetask.getProject() != null) {
+				Project temp = editetask.getProject();
+				task.setProject(temp);
+			}
+			if (editetask.getTaskPerformer() != null) {
+				User temp = editetask.getTaskPerformer();
+				task.setTaskPerformer(temp);
+			}
+			task.setIsCheck(true);
+		} else {
+			task.setIsCheck(true);
+
+		}
+		task.setId(UUID.randomUUID().toString());
+		taskRepository.save(task);
+
+	}
+=======
+>>>>>>> other
+}
