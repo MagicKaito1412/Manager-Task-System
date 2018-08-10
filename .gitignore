@@ -1,0 +1,7 @@
+/.mvn/
+/.settings/
+/src/
+/target/
+/.springBeans
+/wc/.idea/
+/wc/dist/

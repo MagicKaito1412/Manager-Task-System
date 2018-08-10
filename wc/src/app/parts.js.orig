@@ -1,0 +1,123 @@
+define([ "core", "xhtmpl!./ui/templates/dashboard.hbs",
+		"lib/ui/handlebars/View", "lib/ui/list/ObjectList" ], function(core,
+		dashboardTemplate, View) {
+	"use strict";
+
+	core.createModule(function(app) {
+
+		app.registerPart("Dashboard", function() {
+			return View.create({
+				template : dashboardTemplate
+			});
+		});
+
+		app.registerPart("ObjectList:Task", function() {
+			return core.ui.ObjectList.create(app,
+					{
+						dataSource : new core.data.DataSource(app, {
+							name : "TaskByFilter"
+						}),
+						entityType : "Task",
+						title : "Задачи",
+						autoLoad : true,
+						filter : "ObjectFilter:Task",
+						// readOnly: true,
+						inlineEdit : true,
+						columns : [
+								{
+									name : "startline",
+									title : "Дата создания",
+								},
+								{
+									name : "taskPerformer",
+									title : "Исполнитель",
+									getter : function() {
+										return this.taskPerformer().lastName()
+												+ " "
+												+ this.taskPerformer()
+														.firstName()
+												+ " "
+												+ this.taskPerformer()
+														.middleName();
+									}
+								}, {
+									name : "project",
+									title : "Проект",
+									getter : function() {
+										return this.project().title();
+									}
+								}, {
+									name : "status",
+									title : "Статус"
+									
+								}
+								]
+					});
+		});
+
+		app.registerPart("ObjectFilter:Task", function(options) {
+			return core.ui.ObjectFilter.create({
+				type : "TaskFilter",
+				pages : [ {
+					properties : [ "fullName", "project", "actual", "status", "open" ]
+				} ]
+			});
+		});
+
+		app.registerPart("ObjectEditor:Task", function(options) {
+			core.lang.append(options, {
+				pages : [
+						{
+							title : "Основные",
+							properties : [ "description", "status", "deadline",
+									"type", "project", "taskPerformer" ]
+						}, {
+							title : "Дополнительные сведения",
+							properties : [ {
+								name : "numberTaskInProject",
+								readOnly : true
+							}, {
+								name : "startline",
+								readOnly : true
+							}, {
+								name : "wastedTime",
+								readOnly : true
+							}, {
+								name : "changedDate",
+								readOnly : true
+							}, {
+								name : "author",
+								readOnly : true
+							}, {
+								name : "lastEditor",
+								readOnly : true
+							} ]
+						}, {
+							title : "Связанные задачи",
+							properties : [ "lowerPerformentTask", "tasks" ]
+						} ]
+			});
+			
+			return core.ui.ObjectEditor.create(options);
+		});
+
+		app.registerPart("ObjectEditor:Project", function(options) {
+			core.lang.append(options, {
+				pages : [ {
+					title : "Основные",
+					properties : [ "title", "codeProject", "title", {
+						name : "taskCounter",
+						readOnly : true
+					} ]
+				}, {
+					title : "Задачи проекта",
+					properties : [ "projectTasks" ]
+				}, {
+					title : "Участники проекта",
+					properties : [ "crew" ]
+				} ]
+			});
+			return core.ui.ObjectEditor.create(options);
+		});
+	});
+});

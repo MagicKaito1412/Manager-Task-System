@@ -1,0 +1,9 @@
+{
+    "extends": "./node_modules/@croc/webclient/tsconfig",
+    "include": [
+        "src/**/*.ts",
+        "src/**/.*.ts",
+        "node_modules/@croc/webclient/src/**/*.ts",
+        "node_modules/@croc/webclient/src/**/.*.ts"
+    ]
+}
